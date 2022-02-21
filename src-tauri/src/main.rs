@@ -8,6 +8,7 @@ use std::{path::{PathBuf}, str::FromStr, sync::Arc};
 use tauri::{Manager, WindowBuilder,WindowEvent, Window};
 use vlc::{Media, MediaPlayer, Instance, EventType, State};
 use windows::Win32::Foundation::HWND;
+use tauri_plugin_shadows::Shadows;
 
 fn setup_player(window: Arc<Window>) -> (Media, MediaPlayer) {
   let hwnd = window.hwnd().expect("failed to get window `hwnd`");
@@ -37,6 +38,7 @@ fn main() {
     })
     .setup(|app| {
       let player_window = Arc::new(app.get_window("player").unwrap());
+      player_window.set_shadow(true);
       let player_window2 = Arc::clone(&player_window);
 
       let ui_window = app
@@ -46,7 +48,6 @@ fn main() {
               .title("ui")
               .owner_window(HWND(player_window2.hwnd().unwrap() as _))
               .decorations(false)
-
               .transparent(true)
               .resizable(true)
               // https://github.com/tauri-apps/tao/issues/194
@@ -57,6 +58,8 @@ fn main() {
         })
         .unwrap();
 
+      ui_window.set_shadow(false);
+      
       let ui_window2 = ui_window.clone();
       ui_window.on_window_event(move |event| {
         match event {
@@ -68,7 +71,7 @@ fn main() {
 
             println!("width: {:?}, height: {:?}", size.width - 16, size.height - 39);
 
-            ui_window2.set_size(phys).unwrap();
+            player_window2.set_size(phys).unwrap();
 
             if ui_window2.is_maximized().unwrap() {
               player_window2.set_position(
