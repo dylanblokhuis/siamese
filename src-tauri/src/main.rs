@@ -3,14 +3,14 @@
   windows_subsystem = "windows"
 )]
 
-use std::{path::{PathBuf}, str::FromStr, sync::Arc};
+use std::{path::{PathBuf}, str::FromStr};
 
 use tauri::{Manager, WindowBuilder,WindowEvent, Window};
 use vlc::{Media, MediaPlayer, Instance, EventType, State};
 use windows::Win32::Foundation::HWND;
 use tauri_plugin_shadows::Shadows;
 
-fn setup_player(window: Arc<Window>) -> (Media, MediaPlayer) {
+fn setup_player(window: Window) -> (Media, MediaPlayer) {
   let hwnd = window.hwnd().expect("failed to get window `hwnd`");
   let instance = Instance::new().unwrap();
   let path = PathBuf::from_str(r"C:\Users\dylan\dev\something\src-tauri\video.mp4").unwrap();
@@ -37,22 +37,21 @@ fn main() {
       return (win, webview);
     })
     .setup(|app| {
-      let player_window = Arc::new(app.get_window("player").unwrap());
+      let player_window = app.get_window("player").unwrap();
       player_window.set_shadow(true);
-      let player_window2 = Arc::clone(&player_window);
 
       let ui_window = app
         .create_window("ui".to_string(), tauri::WindowUrl::App("index.html".into()), |window_builder, webview_attributes| {
           (
             window_builder
               .title("ui")
-              .owner_window(HWND(player_window2.hwnd().unwrap() as _))
+              .owner_window(HWND(player_window.hwnd().unwrap() as _))
               .decorations(false)
               .transparent(true)
               .resizable(true)
               // https://github.com/tauri-apps/tao/issues/194
-              .inner_size((player_window2.inner_size().unwrap().width - 16).into(), (player_window2.inner_size().unwrap().height - 39).into())
-              .position(player_window2.outer_position().unwrap().x.into() , player_window2.outer_position().unwrap().y.into()),
+              .inner_size((player_window.inner_size().unwrap().width - 16).into(), (player_window.inner_size().unwrap().height - 39).into())
+              .position(player_window.outer_position().unwrap().x.into() , player_window.outer_position().unwrap().y.into()),
             webview_attributes
           )
         })
@@ -61,6 +60,7 @@ fn main() {
       ui_window.set_shadow(false);
       
       let ui_window2 = ui_window.clone();
+      let player_window2 = player_window.clone();
       ui_window.on_window_event(move |event| {
         match event {
           WindowEvent::Resized(size) => {
