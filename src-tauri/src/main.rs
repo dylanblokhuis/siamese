@@ -56,7 +56,6 @@ fn main() {
           )
         })
         .unwrap();
-
       ui_window.set_shadow(false);
       
       let ui_window2 = ui_window.clone();
