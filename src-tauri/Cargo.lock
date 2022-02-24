@@ -42,14 +42,13 @@ checksum = "7a99269dff3bc004caa411f38845c20303f1e393ca2bd6581576fa3a7f59577d"
 name = "app"
 version = "0.1.0"
 dependencies = [
+ "libmpv",
  "serde",
  "serde_json",
  "tauri",
  "tauri-build",
  "tauri-plugin-shadows",
- "vlc-rs",
  "vswhom",
- "windows 0.30.0",
 ]
 
 [[package]]
@@ -1620,6 +1619,19 @@ name = "libc"
 version = "0.2.119"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1bf2e165bb3457c8e098ea76f3e3bc9db55f87aa90d52d0e6be741470916aaa4"
+
+[[package]]
+name = "libmpv"
+version = "2.0.1"
+source = "git+https://github.com/dylanblokhuis/libmpv-rs#85d5d5b231da35205d097c6bff85077168fcda22"
+dependencies = [
+ "libmpv-sys",
+]
+
+[[package]]
+name = "libmpv-sys"
+version = "3.1.0"
+source = "git+https://github.com/dylanblokhuis/libmpv-rs#85d5d5b231da35205d097c6bff85077168fcda22"
 
 [[package]]
 name = "lock_api"
@@ -3575,14 +3587,6 @@ name = "version_check"
 version = "0.9.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "49874b5167b65d7193b8aba1567f5c7d93d001cafc34600cee003eda787e483f"
-
-[[package]]
-name = "vlc-rs"
-version = "0.3.0"
-source = "git+https://github.com/dylanblokhuis/vlc-rs.git#25f27457d298effdf718a9d79b2ad785117bfa29"
-dependencies = [
- "libc",
-]
 
 [[package]]
 name = "vswhom"

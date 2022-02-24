@@ -10,6 +10,9 @@
     "beforeBuildCommand": "yarn build"
   },
   "tauri": {
+    "pattern": {
+      "use": "brownfield"
+    },
     "bundle": {
       "active": true,
       "targets": "all",
@@ -52,9 +55,19 @@
     "allowlist": {
       "all": true
     },
-    "windows": [],
+    "windows": [
+      {
+        "title": "Siamese",
+        "width": 1280,
+        "height": 720,
+        "resizable": true,
+        "transparent": true,
+        "decorations": false,
+        "fullscreen": false
+      }
+    ],
     "security": {
-      "csp": null
+      "csp": "default-src blob: data: filesystem: ws: wss: http: https: tauri: 'unsafe-eval' 'unsafe-inline' 'self'"
     }
   }
 }
