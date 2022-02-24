@@ -8,6 +8,7 @@ repository = ""
 default-run = "app"
 edition = "2021"
 rust-version = "1.57"
+build = "./build.rs"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
