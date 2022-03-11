@@ -21,7 +21,7 @@ impl Player {
         mpv.event_context().observe_property("volume", Format::Int64, 0).unwrap();
         mpv.event_context().observe_property("time-pos", Format::Int64, 0).unwrap();
         mpv.event_context().observe_property("duration", Format::Int64, 0).unwrap();
-        
+
         Self {
             mpv,
             visible: false,
@@ -37,7 +37,7 @@ impl Player {
     }
 
     pub fn update(&mut self) {
-        let event = self.mpv.event_context_mut().wait_event(0.001).unwrap_or(Err(Error::Null));
+        let event = self.mpv.event_context_mut().wait_event(0.0).unwrap_or(Err(Error::Null));
 
         match event {
             Ok(Event::PlaybackRestart) => self.visible = true,
