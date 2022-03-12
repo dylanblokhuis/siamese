@@ -1,6 +1,6 @@
 import { invoke } from "@tauri-apps/api/tauri";
 import clsx from "clsx";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { getTrackBackground, Range } from "react-range";
 import { useStore } from "../state"
 import { secondsIntoPretty } from "../utils/time";
@@ -14,13 +14,13 @@ export default function Seekbar() {
   const store = useStore();
   const [isTooltipOpen, setIsTooltipOpen] = useState(false);
   const [tooltipProps, setTooltipProps] = useState<TooltipProps | null>()
-  const durationInPercentage = store.duration === 0 ? 0 : (store.time / store.duration) * 100
-  const [seekbarFill, setSeekbarFill] = useState(durationInPercentage)
+  const [seekbarFill, setSeekbarFill] = useState(store.time);
+  const [isDragging, setIsDragging] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
   const STEP = 1;
   const MIN = 0;
-  const MAX = store.duration;
+  const MAX = store.duration === 0 ? 2000 : store.duration;
 
   function getTimeFromSeekbarMouseMovement(event: React.MouseEvent<HTMLDivElement>) {
     const el = ref.current;
@@ -31,26 +31,39 @@ export default function Seekbar() {
 
     setTooltipProps({
       label: secondsIntoPretty(time),
-      left: `${percentage * 100}%`
+      left: `${(percentage * 100) - 1.17}%`
     })
   }
+
+  useEffect(() => {
+    if (isDragging) {
+      return
+    }
+
+    setSeekbarFill(store.time)
+  }, [store.time])
 
   return (
     <div
       className="flex justify-center flex-wrap w-full relative"
     >
-      {isTooltipOpen && tooltipProps && (
-        <div className="absolute bottom-[150%] h-6 px-1 rounded bg-red-500 leading-none flex items-center text-sm" style={{ left: tooltipProps.left }}>
+      {!isDragging && tooltipProps && (
+        <div
+          className="absolute bottom-[150%] h-6 px-1 z-10 rounded bg-red-500 leading-none flex items-center text-sm"
+          style={{ left: tooltipProps.left }}
+        >
           {tooltipProps.label}
         </div>
       )}
-
       <Range
+        disabled={!store.visible}
         values={[seekbarFill]}
         step={STEP}
         min={MIN}
         max={MAX}
         onChange={async ([value]) => {
+          setIsDragging(true)
+          setTooltipProps(null)
           if (!isTooltipOpen) {
             setIsTooltipOpen(true)
           }
@@ -65,13 +78,21 @@ export default function Seekbar() {
             timePos: seekbarFill
           })
 
+          setIsDragging(false)
           setIsTooltipOpen(false)
+          setTooltipProps(null)
         }}
         renderTrack={({ props, children }) => (
           <div
             onMouseMove={getTimeFromSeekbarMouseMovement}
-            onMouseEnter={() => setIsTooltipOpen(true)}
-            onMouseLeave={() => setIsTooltipOpen(false)}
+            onMouseEnter={() => {
+              if (!store.visible) return null;
+              setTooltipProps(null)
+            }}
+            onMouseLeave={() => {
+              if (!store.visible) return null;
+              setTooltipProps(null)
+            }}
             onMouseDown={props.onMouseDown}
             onTouchStart={props.onTouchStart}
             ref={ref}
@@ -81,6 +102,7 @@ export default function Seekbar() {
               display: 'flex',
               width: '100%'
             }}
+            className="z-30"
           >
             <div
               ref={props.ref}
@@ -98,15 +120,18 @@ export default function Seekbar() {
             </div>
           </div>
         )}
-        renderThumb={({ props, isDragged }) => (
-          <div
-            {...props}
-            className={clsx("w-4 h-4 rounded-full outline-none", isDragged ? "bg-gray-300" : "bg-white")}
-            style={{
-              ...props.style,
-            }}
-          />
-        )}
+        renderThumb={({ props, isDragged }) => {
+          if (!store.visible) return null
+          return (
+            <div
+              {...props}
+              className={clsx("w-4 h-4 rounded-full outline-none", isDragged ? "bg-gray-300" : "bg-white")}
+              style={{
+                ...props.style,
+              }}
+            />
+          )
+        }}
       />
     </div>
   )

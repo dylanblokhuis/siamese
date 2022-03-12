@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Range, getTrackBackground } from "react-range";
 import { invoke } from "@tauri-apps/api";
 import clsx from "clsx";
-import { VolumeUpIcon } from "@heroicons/react/solid";
+import { VolumeOffIcon, VolumeUpIcon } from "@heroicons/react/solid";
 
 import { useStore } from "../state";
 
@@ -24,7 +24,11 @@ export default function VolumeControls() {
   return (
     <div className="flex items-center">
       <button onClick={() => setIsOpen(!isOpen)} type="button">
-        <VolumeUpIcon className="w-6 h-6" />
+        {volume === 0 ? (
+          <VolumeOffIcon className="w-6 h-6" />
+        ) : (
+          <VolumeUpIcon className="w-6 h-6" />
+        )}
       </button>
 
       {!isOpen && (
@@ -69,7 +73,7 @@ export default function VolumeControls() {
             renderThumb={({ props, isDragged }) => (
               <div
                 {...props}
-                className={clsx("w-4 h-4 rounded-full", isDragged ? "bg-gray-300" : "bg-white")}
+                className={clsx("w-4 h-4 rounded-full outline-none", isDragged ? "bg-gray-300" : "bg-white")}
                 style={{
                   ...props.style,
                 }}
