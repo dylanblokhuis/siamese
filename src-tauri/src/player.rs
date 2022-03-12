@@ -1,7 +1,4 @@
-use std::{
-    path::{Path, PathBuf},
-    str::FromStr,
-};
+use std::{path::PathBuf, str::FromStr};
 
 use libmpv::{
     events::{Event, PropertyData},
@@ -45,10 +42,6 @@ impl Player {
             time: 0,
             duration: 0,
         }
-    }
-
-    pub fn to_json(&self) -> String {
-        serde_json::to_string(self).unwrap()
     }
 
     pub fn update(&mut self) {
