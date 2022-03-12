@@ -16,6 +16,10 @@ https://sourceforge.net/projects/mpv-player-windows/files/libmpv/
 
 ### 5. Copy `mpv-2.dll` to `src-tauri/target/debug` and rename it to `mpv.dll`
 
-If you skip this step you will get `` error: process didn't exit successfully: `target\debug\app.exe` (exit code: 0xc0000135, STATUS_DLL_NOT_FOUND) ``
+If you skip this step you will get
+
+```
+error: process didn't exit successfully: `target\debug\app.exe` (exit code: 0xc0000135, STATUS_DLL_NOT_FOUND)
+```
 
 ### 6. Install node_modules with `yarn` or `npm`
