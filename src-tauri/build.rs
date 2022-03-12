@@ -17,6 +17,8 @@ mod windows {
     use vswhom::VsFindResult;
 
     pub fn link_vlc() {
+        println!("cargo:rerun-if-changed=.env");
+
         dotenv::dotenv().ok();
 
         // somehow it only works when using a path with double slashes like: C:\\Users\\...\\mpv
@@ -51,7 +53,7 @@ mod windows {
         let mpv_def_path = out_dir.join("mpv.def");
         let mpv_import_lib = out_dir.join("mpv.lib");
 
-        let libmpv = mpv_path.join("mpv.dll");
+        let libmpv = mpv_path.join("mpv-2.dll");
         let exports = Command::new(vs_dumpbin)
             .current_dir(out_dir)
             .arg("/EXPORTS")
