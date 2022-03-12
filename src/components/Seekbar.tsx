@@ -47,7 +47,7 @@ export default function Seekbar() {
     <div
       className="flex justify-center flex-wrap w-full relative"
     >
-      {!isDragging && tooltipProps && (
+      {store.visible && !isDragging && tooltipProps && (
         <div
           className="absolute bottom-[150%] h-6 px-1 z-10 rounded bg-red-500 leading-none flex items-center text-sm"
           style={{ left: tooltipProps.left }}
@@ -86,11 +86,9 @@ export default function Seekbar() {
           <div
             onMouseMove={getTimeFromSeekbarMouseMovement}
             onMouseEnter={() => {
-              if (!store.visible) return null;
               setTooltipProps(null)
             }}
             onMouseLeave={() => {
-              if (!store.visible) return null;
               setTooltipProps(null)
             }}
             onMouseDown={props.onMouseDown}

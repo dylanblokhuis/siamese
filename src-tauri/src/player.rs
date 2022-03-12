@@ -1,5 +1,13 @@
+use std::{
+    path::{Path, PathBuf},
+    str::FromStr,
+};
+
+use libmpv::{
+    events::{Event, PropertyData},
+    Error, Format, Mpv,
+};
 use serde::Serialize;
-use libmpv::{Error, Format, Mpv, events::{Event, PropertyData}};
 
 #[derive(Serialize)]
 pub struct Player {
@@ -12,15 +20,22 @@ pub struct Player {
     pub duration: i64,
 }
 
-
 impl Player {
     pub fn new() -> Self {
         let mpv = Mpv::new().unwrap();
         // mpv.event_context().disable_deprecated_events().unwrap();
-        mpv.event_context().observe_property("pause", Format::String, 0).unwrap();
-        mpv.event_context().observe_property("volume", Format::Int64, 0).unwrap();
-        mpv.event_context().observe_property("time-pos", Format::Int64, 0).unwrap();
-        mpv.event_context().observe_property("duration", Format::Int64, 0).unwrap();
+        mpv.event_context()
+            .observe_property("pause", Format::String, 0)
+            .unwrap();
+        mpv.event_context()
+            .observe_property("volume", Format::Int64, 0)
+            .unwrap();
+        mpv.event_context()
+            .observe_property("time-pos", Format::Int64, 0)
+            .unwrap();
+        mpv.event_context()
+            .observe_property("duration", Format::Int64, 0)
+            .unwrap();
 
         Self {
             mpv,
@@ -37,7 +52,11 @@ impl Player {
     }
 
     pub fn update(&mut self) {
-        let event = self.mpv.event_context_mut().wait_event(0.0).unwrap_or(Err(Error::Null));
+        let event = self
+            .mpv
+            .event_context_mut()
+            .wait_event(0.0)
+            .unwrap_or(Err(Error::Null));
 
         match event {
             Ok(Event::PlaybackRestart) => self.visible = true,
@@ -46,12 +65,10 @@ impl Player {
                 name: "pause",
                 change: PropertyData::Str(value),
                 ..
-            }) => {
-                match value {
-                    "yes" => self.paused = true,
-                    "no" => self.paused = false,
-                    _ => ()
-                }
+            }) => match value {
+                "yes" => self.paused = true,
+                "no" => self.paused = false,
+                _ => (),
             },
             Ok(Event::PropertyChange {
                 name: "volume",
@@ -74,11 +91,18 @@ impl Player {
     }
 
     pub fn attach(&self, wid: i64) {
-        self.mpv.set_property("wid", wid).expect("Error attaching to window");
+        self.mpv
+            .set_property("wid", wid)
+            .expect("Error attaching to window");
     }
 
     pub fn load_file(&self, url: &str) {
-        self.mpv.command("loadfile", &[url]).expect("Error loading file");
+        let pathbuf = PathBuf::from_str(url).unwrap();
+        let path = pathbuf.to_str().unwrap();
+
+        self.mpv
+            .command("loadfile", &[format!("{:?}", path).as_str()])
+            .expect("Error loading file");
     }
 
     pub fn stop(&self) {
@@ -94,10 +118,14 @@ impl Player {
     }
 
     pub fn set_time_position(&self, time: i64) {
-        self.mpv.set_property("time-pos", time).expect("Error while setting time-pos");
+        self.mpv
+            .set_property("time-pos", time)
+            .expect("Error while setting time-pos");
     }
 
     pub fn set_volume(&self, amount: i64) {
-        self.mpv.set_property("volume", amount).expect("Error while setting volume");
+        self.mpv
+            .set_property("volume", amount)
+            .expect("Error while setting volume");
     }
 }

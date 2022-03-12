@@ -26,7 +26,7 @@ struct OnPlayerUpdatePayload {
 }
 
 #[tauri::command(async)]
-fn start(window: Window, state: State<AppState>) {
+fn start(window: Window, state: State<AppState>, file_path: String) {
     let mut wid = 0;
     #[cfg(target_os = "windows")]
     {
@@ -36,7 +36,7 @@ fn start(window: Window, state: State<AppState>) {
     let clone = state.player.clone();
     let mut player = clone.lock().unwrap();
     player.attach(wid);
-    player.load_file(r"C:\Users\dylan\Downloads\video.mkv");
+    player.load_file(&file_path);
     player.play();
     player.visible = true;
     std::mem::drop(player);
