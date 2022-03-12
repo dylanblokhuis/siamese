@@ -56,7 +56,7 @@ export default function VolumeControls() {
                   style={{
                     background: getTrackBackground({
                       values: [volume],
-                      colors: ['#548BF4', '#ccc'],
+                      colors: ['rgb(239 68 68)', '#ccc'],
                       min: MIN,
                       max: MAX
                     }),
